@@ -42,16 +42,28 @@ int set_precedence(const char& math_operator)
 		return 4;
 		break;
 	case '*':
-		return 3;
-		break;
 	case '/':
 		return 3;
 		break;
 	case '+':
-		return 2;
-		break;
 	case '-':
 		return 2;
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
+bool is_left_associative(const char& math_operator)
+{
+	switch (math_operator)
+	{
+	case '*':
+	case '/':
+	case '+':
+	case '-':
+		return 1;
 		break;
 	default:
 		return 0;
@@ -72,6 +84,10 @@ int main(){
 
 	for (const auto& character : mathematical_expression)
 	{
+		if (isblank(character))
+		{
+			continue;
+		}
 		if (isdigit(character))
 		{
 			number += character;
@@ -88,12 +104,13 @@ int main(){
 				if (operator_stack.empty())
 				{
 					operator_stack.push(character);
+					continue;
 				}
 				else
 				{
 					int precedence_of_character = set_precedence(character);
 					int precedence_of_operator_on_top_of_stack = set_precedence(operator_stack.top());
-					while (precedence_of_character <= precedence_of_operator_on_top_of_stack)
+					while ((is_left_associative(character) && precedence_of_character <= precedence_of_operator_on_top_of_stack) || precedence_of_character < precedence_of_operator_on_top_of_stack)
 					{
 						string temp(1, operator_stack.top());
 						operator_stack.pop();
@@ -106,7 +123,6 @@ int main(){
 					}
 					operator_stack.push(character);
 				}
-				
 			}
 		}
 	}
