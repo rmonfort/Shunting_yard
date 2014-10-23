@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <queue>
 #include <cctype>
 #include <stack>
 
@@ -8,12 +7,12 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
-using std::queue;
 using std::stack;
 
-bool is_operator(const char& operator_to_check)
+// Checks if character is an operator
+bool is_operator(const char& character_to_check)
 {
-	switch (operator_to_check)
+	switch (character_to_check)
 	{
 	case '^':
 	case '*':
@@ -28,6 +27,7 @@ bool is_operator(const char& operator_to_check)
 	}
 }
 
+// Checks if operator is left associative
 bool is_left_associative(const char& operator_to_check)
 {
 	switch (operator_to_check)
@@ -44,6 +44,7 @@ bool is_left_associative(const char& operator_to_check)
 	}
 }
 
+// Returns precedence value of an operator
 int set_precedence(const char& operation)
 {
 	switch (operation)
@@ -65,25 +66,28 @@ int set_precedence(const char& operation)
 	}
 }
 
+// Checks if a character is a left parenthesis
 bool is_left_parenthesis(const char& character_to_check)
 {
 	return character_to_check == '(' ? 1 : 0;
 }
 
+// Checks if a character is a right parenthesis
 bool is_right_parenthesis(const char& character_to_check)
 {
 	return character_to_check == ')' ? 1 : 0;
 }
 
-bool a_parenthesis_exists_in_stack(stack<char> operator_stack)
+// Checks if a parentehsis exists in stack
+bool a_parenthesis_exists_in_stack(stack<char> stack_to_check)
 {
-	while (!operator_stack.empty())
+	while (!stack_to_check.empty())
 	{
-		if (is_left_parenthesis(operator_stack.top()) || is_right_parenthesis(operator_stack.top()))
+		if (is_left_parenthesis(stack_to_check.top()) || is_right_parenthesis(stack_to_check.top()))
 		{
 			return 1;
 		}
-		operator_stack.pop();
+		stack_to_check.pop();
 	}
 	return 0;
 }
@@ -95,35 +99,40 @@ int main()
 	getline(cin, mathematical_expression);
 
 	string number;
-	queue<string> output_queue;
 	stack<char> operator_stack;
 	for (const auto& character : mathematical_expression)
 	{
+		// Skip blank characters
 		if (isblank(character))
 		{
 			continue;
 		}
 
-		if (isdigit(character))
+		
+		if (isdigit(character)) // If character is a digit, append to number
 		{
 			number += character;
 			continue;
 		}
-		else if (is_operator(character))
+		else if (is_operator(character)) 
 		{
-			if (number != "")
+			if (number != "") // If number isn't empty, output it
 			{
-				output_queue.push(number);
+				cout << number << " ";
 				number = "";
 			}
 			while (!operator_stack.empty())
 			{
-				int precedence_of_character = set_precedence(character);
+				// Set precedence for character and operator on top of stack
+				int precedence_of_character = set_precedence(character); 
 				int precedence_of_operator_on_top_of_stack = set_precedence(operator_stack.top());
+
+				// If character is left associative and its precedence is less than or equal to that of the operator on top of the stack
+				// Or the character has less precedence than the operator
+				// then output the operator and remove it from the stack
 				if ((is_left_associative(character) && precedence_of_character <= precedence_of_operator_on_top_of_stack) || precedence_of_character < precedence_of_operator_on_top_of_stack)
 				{
-					string top_of_operator_stack(1, operator_stack.top());
-					output_queue.push(top_of_operator_stack);
+					cout << operator_stack.top() << " ";
 					operator_stack.pop();
 				}
 				else
@@ -137,7 +146,7 @@ int main()
 		{
 			if (number != "")
 			{
-				output_queue.push(number);
+				cout << number << " ";
 				number = "";
 			}
 			operator_stack.push(character);
@@ -146,15 +155,14 @@ int main()
 		{
 			if (number != "")
 			{
-				output_queue.push(number);
+				cout << number << " ";
 				number = "";
 			}
-			while (!is_left_parenthesis(operator_stack.top()))
+			while (!is_left_parenthesis(operator_stack.top())) // Cycle through stack and search for matching parenthesis
 			{
-				string top_of_operator_stack(1, operator_stack.top());
-				output_queue.push(top_of_operator_stack);
+				cout << operator_stack.top() << " ";
 				operator_stack.pop();
-				if (operator_stack.empty())
+				if (operator_stack.empty()) // If a matching parenthesis isn't found output and error message 
 				{
 					cout << "Error: Mismatched parentheses" << endl;
 					return 1;
@@ -162,44 +170,17 @@ int main()
 			}
 			operator_stack.pop();
 		}
-
-		/*cout << endl;*/
-		//// Test
-		//queue<string> queue_test(output_queue);
-		//cout << "Output Queue: ";
-		//while (!queue_test.empty())
-		//{
-		//	cout << queue_test.front() << " ";
-		//	queue_test.pop();
-		//}
-		//cout << endl;
-
-		//stack<char> stack_test(operator_stack);
-		//cout << "Operator Stack: ";
-		//while (!stack_test.empty())
-		//{
-		//	cout << stack_test.top() << " ";
-		//	stack_test.pop();
-		//}
-		//cout << endl;
-		
 	}
-	if (number != "")
+	if (number != "") 
 	{
-		output_queue.push(number);
+		cout << number << " ";
 		number = "";
 	}
 
-	if (a_parenthesis_exists_in_stack(operator_stack))
+	if (a_parenthesis_exists_in_stack(operator_stack)) // Checks stack for mismatched parenthesis
 	{
 		cout << "Error: Mismatched parentheses" << endl;
 		return 1;
-	}
-
-	while (!output_queue.empty())
-	{
-		cout << output_queue.front() << " ";
-		output_queue.pop();
 	}
 
 	while (!operator_stack.empty())
