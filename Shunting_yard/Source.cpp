@@ -108,13 +108,13 @@ int main()
 			continue;
 		}
 
-		
+
 		if (isdigit(character) || character == '.') // If character is a digit or decimal point, append to number
 		{
 			number += character;
 			continue;
 		}
-		else if (is_operator(character)) 
+		else if (is_operator(character))
 		{
 			if (number != "") // If number isn't empty, output it
 			{
@@ -124,7 +124,7 @@ int main()
 			while (!operator_stack.empty())
 			{
 				// Set precedence for character and operator on top of stack
-				int precedence_of_character = set_precedence(character); 
+				int precedence_of_character = set_precedence(character);
 				int precedence_of_operator_on_top_of_stack = set_precedence(operator_stack.top());
 
 				// If character is left associative and its precedence is less than or equal to that of the operator on top of the stack
@@ -171,7 +171,7 @@ int main()
 			operator_stack.pop();
 		}
 	}
-	if (number != "") 
+	if (number != "")
 	{
 		cout << number << " ";
 		number = "";
