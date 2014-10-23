@@ -109,7 +109,7 @@ int main()
 		}
 
 		
-		if (isdigit(character)) // If character is a digit, append to number
+		if (isdigit(character) || character == '.') // If character is a digit or decimal point, append to number
 		{
 			number += character;
 			continue;
